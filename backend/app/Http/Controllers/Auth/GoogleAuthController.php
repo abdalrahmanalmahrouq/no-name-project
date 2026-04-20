@@ -30,6 +30,6 @@ class GoogleAuthController extends Controller
         $user->save();
 
         Auth::login($user);
-        return redirect(env('FRONTEND_URL').'/');
+        return redirect(env('FRONTEND_URL').'/dashboard');
     }
 }

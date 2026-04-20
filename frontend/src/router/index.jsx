@@ -9,7 +9,14 @@ import { Button } from '@/components/ui/button';
 import ForgotPasswordPage from '@/features/auth/ForgotPasswordPage';
 import ProfilePage from '@/features/auth/ProfilePage';
 import ChangePasswordPage from '@/features/auth/ChangePasswordPage';
+import LandingPage from '@/features/landing/LandingPage';
 export const router = createBrowserRouter([
+  // --- Public Landing ---
+  {
+    path: '/',
+    element: <LandingPage />,
+  },
+
   // --- Public Auth Routes ---
   {
     element: <GuestRoute />,

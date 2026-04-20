@@ -40,7 +40,7 @@ export default function RegisterForm() {
 
   return (
     <>
-    <h2 className='font-bold text-2xl mb-6'>
+    <h2 className='font-bold text-2xl mb-6 text-white'>
       Register
     </h2>
 
@@ -50,7 +50,7 @@ export default function RegisterForm() {
     onSubmit={handleSubmit}
     footer={
       <>
-        <Button type="submit" className="w-full mt-4">Sign Up</Button>
+        <Button type="submit" variant="hero" className="w-full mt-4">Sign Up</Button>
         <GoogleAuthButton title={" Sign up with Google"} />
         <Button variant="link" onClick={() => navigate('/login')} type="button" className="cursor-pointer">
           Already have an account? Sign in

@@ -6,7 +6,7 @@ export default function GuestRoute() {
 
   // If a user IS logged in, kick them to the dashboard
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;

@@ -7,6 +7,42 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## AI assistant (Nova)
+
+The landing page ships with a guest-facing AI assistant (Nova) powered by OpenRouter (default model: `xiaomi/mimo-v2-flash`). All requests go through the Laravel backend so the API key stays on the server.
+
+### 1. Set the API key
+
+Add an OpenRouter API key to `backend/.env`:
+
+```
+OPENROUTER_API_KEY=your-key-here
+OPENROUTER_MODEL=xiaomi/mimo-v2-flash
+```
+
+Get a key at https://openrouter.ai/keys. You can swap `OPENROUTER_MODEL` for any other model listed at https://openrouter.ai/models.
+
+### 2. Seed the knowledge base
+
+The assistant answers only from rows in the `ai_knowledge` table. Run the migration and seeder:
+
+```
+php artisan migrate
+php artisan db:seed --class=AiKnowledgeSeeder
+```
+
+`type=context` rows describe the project; `type=faq` rows are Q/A pairs used as grounding.
+
+### 3. Endpoint
+
+`POST /api/ai/chat` (public, rate-limited to 20 requests/minute per IP):
+
+```json
+{ "message": "How do I sign in?", "history": [{ "role": "user", "text": "..." }] }
+```
+
+Returns `{ "reply": "..." }` on success or `{ "error": "..." }` with HTTP 502 on upstream failure.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

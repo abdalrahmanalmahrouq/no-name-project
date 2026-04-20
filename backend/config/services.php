@@ -41,4 +41,16 @@ return [
     'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'openrouter' => [
+        'key' => env('OPENROUTER_API_KEY'),
+        'model' => env('OPENROUTER_MODEL', 'xiaomi/mimo-v2-flash'),
+        'base_url' => env('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1'),
+        'site_url' => env('OPENROUTER_SITE_URL', env('APP_URL')),
+        'site_name' => env('OPENROUTER_SITE_NAME', env('APP_NAME')),
+    ],
+
+    'ai_agent' => [
+        'project_name' => env('AI_PROJECT_NAME', env('APP_NAME', 'this project')),
+    ],
+
 ];

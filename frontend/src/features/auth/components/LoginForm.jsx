@@ -32,7 +32,7 @@ export default function LoginForm() {
 
   return (
     <>
-      <h2 className='font-bold text-2xl mb-6'>
+      <h2 className='font-bold text-2xl mb-6 text-white'>
         Login
       </h2>
 
@@ -63,7 +63,7 @@ export default function LoginForm() {
       }
       footer ={
         <>  
-          <Button type="submit" className="w-full mt-4">Sign In</Button>   
+          <Button type="submit" variant="hero" className="w-full mt-4">Sign In</Button>   
           <GoogleAuthButton title="Sign in with Google" />
           <Button variant="link" onClick={() => navigate('/register')} type="button" className="cursor-pointer">
             Don't have an account? Sign up
