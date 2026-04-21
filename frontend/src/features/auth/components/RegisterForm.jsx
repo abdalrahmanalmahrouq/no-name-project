@@ -8,6 +8,7 @@ import { FormField } from '@/components/FormField';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { AuthCard } from '@/features/auth/components/AuthCard';
 import { GoogleAuthButton } from './GoogleAuthButton';
+import BackToHomeButton from './BackToHomeButton';
 
 export default function RegisterForm() {
   const [name, setName] = useState('');
@@ -44,6 +45,8 @@ export default function RegisterForm() {
       Register
     </h2>
 
+    <div className="relative w-full max-w-md mx-auto">
+      <BackToHomeButton />
     <AuthCard
     title = "Create an account" 
     description= "Enter your details below to create your account."
@@ -95,7 +98,7 @@ export default function RegisterForm() {
       </>
     }
     />
-    
+    </div>
     </>
   );
 }

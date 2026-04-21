@@ -4,7 +4,7 @@ import RegisterPage from '@/features/auth/RegisterPage';
 import AuthLayout from '@/layouts/AuthLayout';
 import GuestRoute from '@/components/GuestRoute';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import DashboardLayout from '@/layouts/DashboardLayout';
+import SidebarLayout from '@/layouts/SidebarLayout';
 import { Button } from '@/components/ui/button';
 import ForgotPasswordPage from '@/features/auth/ForgotPasswordPage';
 import ProfilePage from '@/features/auth/ProfilePage';
@@ -48,7 +48,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        element: <DashboardLayout />,
+        element: <SidebarLayout />,
         children: [
           {
             path: '/dashboard',

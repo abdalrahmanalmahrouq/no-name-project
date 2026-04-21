@@ -112,10 +112,10 @@ export default function ProfileForm() {
         }
         footer={
           <>
-            <Button type="submit" className="w-full mt-4" disabled={submitting}>
+            <Button type="submit" variant="hero" className="w-full mt-4" disabled={submitting}>
                 {submitting ? 'Updating...' : 'Update Profile'}
             </Button>
-            <Button type="button" className="w-full" onClick={() => navigate('/change-password')}>
+            <Button type="button" variant="outline" className="w-full" onClick={() => navigate('/change-password')}>
                     Change Password
             </Button>
           </>

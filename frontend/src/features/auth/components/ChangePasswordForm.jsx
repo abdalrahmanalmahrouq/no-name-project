@@ -74,7 +74,7 @@ export default function ChangePasswordForm() {
             </>
         }
         footer={
-            <Button type="submit" className="w-full mt-4">Change Password</Button>
+            <Button type="submit" variant="hero" className="w-full mt-4">Change Password</Button>
         }
       
     />

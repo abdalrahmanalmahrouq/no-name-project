@@ -8,6 +8,7 @@ import { FormField } from '@/components/FormField';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { AuthCard } from '@/features/auth/components/AuthCard';
 import { GoogleAuthButton } from './GoogleAuthButton';
+import BackToHomeButton from './BackToHomeButton';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -36,6 +37,8 @@ export default function LoginForm() {
         Login
       </h2>
 
+      <div className="relative w-full max-w-md mx-auto">
+        <BackToHomeButton />
       <AuthCard
       title="Welcome Back"
       description="Enter your credentials to access your account."
@@ -74,6 +77,7 @@ export default function LoginForm() {
         </>
       }
       />
+      </div>
     </>
   );
 }
