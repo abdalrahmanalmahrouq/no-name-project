@@ -1,4 +1,4 @@
-import { LayoutDashboard, KeyRound, UserRound } from "lucide-react";
+import { LayoutDashboard, KeyRound, UserRound, Repeat } from "lucide-react";
 
 export const APP_NAV_ITEMS = [
   {
@@ -6,6 +6,12 @@ export const APP_NAV_ITEMS = [
     label: "Dashboard",
     description: "Workspace overview",
     icon: LayoutDashboard,
+  },
+  {
+    to: "/routines",
+    label: "Routines",
+    description: "Daily habits & rituals",
+    icon: Repeat,
   },
   {
     to: "/profile",

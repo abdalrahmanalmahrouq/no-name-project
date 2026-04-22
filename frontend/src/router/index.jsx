@@ -10,6 +10,7 @@ import ForgotPasswordPage from '@/features/auth/ForgotPasswordPage';
 import ProfilePage from '@/features/auth/ProfilePage';
 import ChangePasswordPage from '@/features/auth/ChangePasswordPage';
 import LandingPage from '@/features/landing/LandingPage';
+import RoutinesPage from '@/features/routines/RoutinesPage';
 export const router = createBrowserRouter([
   // --- Public Landing ---
   {
@@ -58,6 +59,10 @@ export const router = createBrowserRouter([
                 <p className="text-muted-foreground">Select an item from the sidebar to begin.</p>
               </div>
             )
+          },
+          {
+            path: '/routines',
+            element: <RoutinesPage />
           },
           {
             path: '/profile',
