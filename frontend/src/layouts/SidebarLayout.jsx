@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
-import {
-  ChevronLeft,
-  LayoutDashboard,
-  KeyRound,
-  UserRound,
-  Menu,
-} from "lucide-react";
+import { ChevronLeft, Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,19 +9,18 @@ import { useAuth } from "@/features/auth/context/AuthContext";
 import { cn } from "@/lib/utils";
 import Logout from "@/components/Logout";
 import AIAgentBubble from "@/features/landing/components/AIAgentBubble";
-
-const NAV_ITEMS = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/profile", label: "Profile", icon: UserRound },
-  { to: "/change-password", label: "Change Password", icon: KeyRound },
-];
+import TopBar from "@/layouts/TopBar";
+import { APP_NAV_ITEMS } from "@/constants/nav";
+import { useTheme } from "@/lib/useTheme";
 
 const STORAGE_KEY = "nn-sidebar-collapsed";
 
 export default function SidebarLayout() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.localStorage.getItem(STORAGE_KEY) === "true";
@@ -41,20 +34,26 @@ export default function SidebarLayout() {
   const initial = (user?.name || "U").charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex">
+    <div className="min-h-screen bg-background text-foreground flex relative">
+      {/* Shared chrome backdrop — one continuous image behind sidebar + topbar */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 z-0 pointer-events-none"
+      >
+        <BackgroundOverlay />
+      </div>
+
       <aside
         className={cn(
           "sticky top-0 h-screen flex flex-col",
-          "relative overflow-hidden text-white",
-          "border-r border-black/20",
+          "relative z-10 text-white",
+          isDark ? "border-r border-black/30" : "border-r border-white/20",
           "transition-[width] duration-300 ease-out",
           collapsed ? "w-[76px]" : "w-[260px]"
         )}
         aria-label="Primary"
       >
-        <BackgroundOverlay />
-
-        <div className="relative z-10 flex flex-col h-full">
+        <div className="flex flex-col h-full">
         {/* Brand + Toggle */}
         <div
           className={cn(
@@ -128,7 +127,7 @@ export default function SidebarLayout() {
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-2 py-4">
           <ul className="flex flex-col gap-1">
-            {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+            {APP_NAV_ITEMS.map(({ to, label, icon: Icon }) => (
               <li key={to}>
                 <NavLink
                   to={to}
@@ -162,9 +161,15 @@ export default function SidebarLayout() {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 min-w-0 flex flex-col bg-background">
-        <div className="flex-1 p-8 max-w-[1200px] w-full mx-auto">
-          <div className="flex-1 p-12 ">
+      <main className="relative z-10 flex-1 min-w-0 flex flex-col">
+        <TopBar />
+        <div
+          className={cn(
+            "flex-1 flex flex-col min-w-0",
+            isDark ? "text-white" : "bg-white text-[#1d1d1f]"
+          )}
+        >
+          <div className="flex-1 w-full max-w-[1200px] mx-auto px-8 py-10">
             <Outlet />
           </div>
         </div>
