@@ -1,0 +1,14 @@
+{
+  "name": "no-name-project",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c \"#93c5fd,#c4b5fd\" --kill-others-on-fail \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "php -d variables_order=EGPCS backend/artisan serve",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "install:all": "composer install --working-dir=backend && npm install --prefix frontend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

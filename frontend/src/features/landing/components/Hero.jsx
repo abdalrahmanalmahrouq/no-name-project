@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-
+import { useAuth } from '@/features/auth/context/AuthContext';
 export default function Hero() {
+  const { user } = useAuth();
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center">
       <div className="relative z-10 flex flex-col items-center">
@@ -13,9 +14,11 @@ export default function Hero() {
           A simple, modern workspace built for focus and speed.
         </p>
 
-        <Button asChild variant="hero" size="pill" className="mt-10">
-          <Link to="/login">Get Started</Link>
-        </Button>
+        {!user && (
+          <Button asChild variant="hero" size="pill" className="mt-10">
+            <Link to="/login">Get Started</Link>
+          </Button>
+        )}
       </div>
     </section>
   );

@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/features/auth/context/AuthContext';
+import Logout from '@/components/Logout';
+import { authApi } from '@/features/auth/api/authApi';
+import { toast } from 'react-toastify';
 
 const NAV_LINKS = [
   { href: '#services', label: 'Services' },
@@ -16,6 +20,8 @@ const SCROLL_THRESHOLD = 40;
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, setUser } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD);
@@ -31,6 +37,23 @@ export default function Navbar() {
     return () => window.removeEventListener('keydown', onKey);
   }, [mobileOpen]);
 
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+      setUser(null);
+      navigate("/");
+      toast.success("Logout successful.", {
+        autoClose: 3000,
+        position: "bottom-right",
+      });
+    } catch (error) {
+      console.error("Logout failed", error);
+      toast.error("Logout failed. Please try again.", {
+        autoClose: 3000,
+        position: "bottom-right",
+      });
+    }
+  };
   const scrollToId = (id) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -89,25 +112,47 @@ export default function Navbar() {
             </a>
           ))}
 
-          <Link
-            to="/login"
+          {user ? (
+            <>
+            <button 
             className={cn(
               'ml-2 rounded-full px-3 py-1.5',
               'text-[14px] font-normal tracking-[-0.224px]',
               'text-white/80 transition hover:text-white hover:bg-white/10',
+              'cursor-pointer'
             )}
-          >
-            Sign In
-          </Link>
-
-          <Button
-            asChild
-            variant="hero"
-            size="pill"
-            className="ml-1 h-9 px-5 py-0 text-[14px]"
-          >
-            <Link to="/register">Get Started</Link>
-          </Button>
+            onClick={handleLogout}
+            >
+            Logout
+            </button>
+            <Button onClick={() => navigate('/dashboard')} variant='hero' size="default" className='rounded-full ml-1 h-9 px-5 py-0 text-[14px]'>
+              Dashboard
+            </Button>
+            
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className={cn(
+                  'ml-2 rounded-full px-3 py-1.5',
+                  'text-[14px] font-normal tracking-[-0.224px]',
+                  'text-white/80 transition hover:text-white hover:bg-white/10'
+                )}
+              >
+                Sign In
+              </Link>
+              <Button
+                asChild
+                variant="hero"
+                size="pill"
+                className="ml-1 h-9 px-5 py-0 text-[14px]"
+              >
+                <Link to="/register">Get Started</Link>
+              </Button>
+            </>
+          )}
+          
         </div>
 
         {/* Mobile toggle */}
@@ -141,20 +186,51 @@ export default function Navbar() {
             </a>
           ))}
           <div className="mt-2 grid grid-cols-2 gap-2">
-            <Link
-              to="/login"
-              onClick={() => setMobileOpen(false)}
-              className="rounded-full border border-white/25 px-4 py-2 text-center text-[14px] font-normal tracking-[-0.224px] text-white hover:bg-white/10"
+          {user ? (
+            <>
+            <button 
+            className={cn(
+              'ml-2 rounded-full px-3 py-1.5',
+              'text-[14px] font-normal tracking-[-0.224px]',
+              'text-white/80 transition hover:text-white hover:bg-white/10',
+              'cursor-pointer'
+            )}
+            onClick={handleLogout}
             >
-              Sign In
-            </Link>
-            <Link
-              to="/register"
-              onClick={() => setMobileOpen(false)}
-              className="rounded-full bg-[#0071e3] px-4 py-2 text-center text-[14px] font-normal tracking-[-0.224px] text-white hover:bg-[#0077ed]"
-            >
-              Get Started
-            </Link>
+            Logout
+            </button>
+            <Button variant='hero' size="default" className='rounded-full'>
+              <Link to="/dashboard">
+                Dashboard
+              </Link>
+            </Button>
+            
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className={cn(
+                  'ml-2 rounded-full px-3 py-1.5',
+                  'text-[14px] font-normal tracking-[-0.224px]',
+                  'text-white/80 transition hover:text-white hover:bg-white/10'
+                )}
+              >
+                Sign In
+              </Link>
+              <Button
+                asChild
+                variant="hero"
+                size="pill"
+                className="ml-1 h-9 px-5 py-0 text-[14px]"
+              >
+                <Link to="/register">Get Started</Link>
+              </Button>
+            </>
+          )}
+          
+           
+            
           </div>
         </div>
       </div>

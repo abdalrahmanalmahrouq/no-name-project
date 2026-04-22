@@ -14,6 +14,7 @@ import BackgroundOverlay from "@/components/BackgroundOverlay";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { cn } from "@/lib/utils";
 import Logout from "@/components/Logout";
+import AIAgentBubble from "@/features/landing/components/AIAgentBubble";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -26,7 +27,7 @@ const STORAGE_KEY = "nn-sidebar-collapsed";
 export default function SidebarLayout() {
   const { user } = useAuth();
   const navigate = useNavigate();
-
+  
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.localStorage.getItem(STORAGE_KEY) === "true";
@@ -168,6 +169,8 @@ export default function SidebarLayout() {
           </div>
         </div>
       </main>
+
+      <AIAgentBubble />
     </div>
   );
 }

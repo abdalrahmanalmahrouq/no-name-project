@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { authApi } from "@/features/auth/api/authApi";
 import { useAuth } from "@/features/auth/context/AuthContext";
 
-export default function Logout({ collapsed }) {
+export default function Logout({ collapsed = false }) {
   const { setUser } = useAuth();
   const navigate = useNavigate();
 

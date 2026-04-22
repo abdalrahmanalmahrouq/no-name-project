@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Send, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/features/auth/context/AuthContext';
 import { aiApi } from '../api/aiApi';
 
 const HISTORY_WINDOW = 10;
@@ -9,26 +10,46 @@ const HISTORY_WINDOW = 10;
 const ROBOT_IMAGE =
   'https://api.dicebear.com/7.x/bottts/svg?seed=nova&backgroundColor=b6e3f4';
 
-const QUICK_PROMPTS = [
+const GUEST_PROMPTS = [
   'What is this project?',
   'How do I get started?',
   'Pricing & plans',
 ];
 
-const INITIAL_MESSAGES = [
-  {
-    id: 'welcome',
-    role: 'assistant',
-    text: "Hi there! I'm Nova, your AI guide. Ask me anything about the project.",
-  },
+const USER_PROMPTS = [
+  'What info do you have about me?',
+  'When did I sign up?',
+  'Is my Google account linked?',
 ];
 
 export default function QuickChat({ open, onClose }) {
-  const [messages, setMessages] = useState(INITIAL_MESSAGES);
+  const { user } = useAuth() ?? {};
+  const isAuthenticated = Boolean(user);
+
+  const initialMessages = useMemo(
+    () => [
+      {
+        id: 'welcome',
+        role: 'assistant',
+        text: isAuthenticated
+          ? `Hi ${user.name?.split(' ')[0] || 'there'}! I'm Nova. Ask me about the project or your account.`
+          : "Hi there! I'm Nova, your AI guide. Ask me anything about the project.",
+      },
+    ],
+    [isAuthenticated, user?.name],
+  );
+
+  const quickPrompts = isAuthenticated ? USER_PROMPTS : GUEST_PROMPTS;
+
+  const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    setMessages(initialMessages);
+  }, [initialMessages]);
 
   useEffect(() => {
     if (open) {
@@ -72,7 +93,9 @@ export default function QuickChat({ open, onClose }) {
     setIsSending(true);
 
     try {
-      const { data } = await aiApi.sendMessage(value, history);
+      const { data } = await aiApi.sendMessage(value, history, {
+        authenticated: isAuthenticated,
+      });
       setMessages((m) =>
         m.map((msg) =>
           msg.id === typingId
@@ -166,7 +189,7 @@ export default function QuickChat({ open, onClose }) {
 
         {messages.length <= 1 && !isSending && (
           <div className="flex flex-wrap gap-1.5 bg-[#1d1d1f] px-4 pb-3">
-            {QUICK_PROMPTS.map((p) => (
+            {quickPrompts.map((p) => (
               <button
                 key={p}
                 type="button"
