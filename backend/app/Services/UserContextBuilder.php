@@ -6,6 +6,11 @@ use App\Models\User;
 
 class UserContextBuilder
 {
+    public function __construct(
+        private readonly RoutinesContextBuilder $routines,
+    ) {
+    }
+
     /**
      * Build a plain-text snapshot of facts about the authenticated user
      * that the AI assistant is allowed to read. This is the SINGLE source
@@ -16,15 +21,22 @@ class UserContextBuilder
      */
     public function build(User $user): string
     {
+        return $this->profileBlock($user)
+            ."\n\n## Routines\n"
+            .$this->routines->build($user);
+    }
+
+    private function profileBlock(User $user): string
+    {
         $fields = [
-            'name' => $user->name ?: '(not set)',
-            'email' => $user->email,
-            'joined' => optional($user->created_at)->toFormattedDateString() ?: '(unknown)',
+            'name'                  => $user->name ?: '(not set)',
+            'email'                 => $user->email,
+            'joined'                => optional($user->created_at)->toFormattedDateString() ?: '(unknown)',
             'google_account_linked' => ! empty($user->google_id) ? 'yes' : 'no',
-            'has_avatar' => ! empty($user->image) ? 'yes' : 'no',
+            'has_avatar'            => ! empty($user->image) ? 'yes' : 'no',
         ];
 
-        $lines = [];
+        $lines = ['## Profile'];
         foreach ($fields as $key => $value) {
             $lines[] = "- {$key}: {$value}";
         }
