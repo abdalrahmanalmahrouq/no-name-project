@@ -8,6 +8,7 @@ class UserContextBuilder
 {
     public function __construct(
         private readonly RoutinesContextBuilder $routines,
+        private readonly TasksContextBuilder $tasks,
     ) {
     }
 
@@ -23,7 +24,9 @@ class UserContextBuilder
     {
         return $this->profileBlock($user)
             ."\n\n## Routines\n"
-            .$this->routines->build($user);
+            .$this->routines->build($user)
+            ."\n\n## Tasks\n"
+            .$this->tasks->build($user);
     }
 
     private function profileBlock(User $user): string
