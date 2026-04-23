@@ -7,7 +7,7 @@ import TodayProgress from "./components/TodayProgress";
 import RoutineList from "./components/RoutineList";
 import RoutinesEmpty from "./components/RoutinesEmpty";
 import RoutineFormModal from "./components/RoutineFormModal";
-import ConfirmDialog from "./components/ConfirmDialog";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function RoutinesPage() {
   const [routines, setRoutines] = useState([]);

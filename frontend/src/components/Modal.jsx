@@ -3,7 +3,15 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export default function Modal({ open, onClose, title, description, children, footer, size = "md" }) {
+export default function Modal({
+  open,
+  onClose,
+  title,
+  description,
+  children,
+  footer,
+  size = "md",
+}) {
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && onClose?.();

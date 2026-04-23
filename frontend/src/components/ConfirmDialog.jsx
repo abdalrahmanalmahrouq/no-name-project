@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import Modal from "./Modal";
+import Modal from "@/components/Modal";
 
 export default function ConfirmDialog({
   open,

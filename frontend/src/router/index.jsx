@@ -11,6 +11,7 @@ import ProfilePage from '@/features/auth/ProfilePage';
 import ChangePasswordPage from '@/features/auth/ChangePasswordPage';
 import LandingPage from '@/features/landing/LandingPage';
 import RoutinesPage from '@/features/routines/RoutinesPage';
+import TasksPage from '@/features/tasks/TasksPage';
 export const router = createBrowserRouter([
   // --- Public Landing ---
   {
@@ -63,6 +64,10 @@ export const router = createBrowserRouter([
           {
             path: '/routines',
             element: <RoutinesPage />
+          },
+          {
+            path: '/tasks',
+            element: <TasksPage />
           },
           {
             path: '/profile',

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
-import Modal from "./Modal";
+import Modal from "@/components/Modal";
 import IconPicker from "./IconPicker";
 import TimeOfDayPicker from "./TimeOfDayPicker";
 import DayPicker from "./DayPicker";
