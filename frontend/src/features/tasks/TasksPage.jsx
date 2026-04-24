@@ -1,6 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
-import { toast } from "react-toastify";
+import { useMemo, useState } from "react";
 import LoadingState from "@/components/LoadingState";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import EmptyState from "@/components/EmptyState";
+import { useCrudResource } from "@/hooks/useCrudResource";
+import { notifyError } from "@/lib/notify";
 import { tasksApi } from "./api/tasksApi";
 import TasksHeader from "./components/TasksHeader";
 import TasksSummary from "./components/TasksSummary";
@@ -8,36 +11,28 @@ import TaskFilters from "./components/TaskFilters";
 import TaskList from "./components/TaskList";
 import TasksEmpty from "./components/TasksEmpty";
 import TaskFormModal from "./components/TaskFormModal";
-import ConfirmDialog from "@/components/ConfirmDialog";
+
+const LABELS = { singular: "Task", plural: "tasks" };
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const [pendingDelete, setPendingDelete] = useState(null);
+  const {
+    items: tasks,
+    setItems: setTasks,
+    loading,
+    modalOpen,
+    editing,
+    openCreate,
+    openEdit,
+    closeModal,
+    handleSubmit,
+    pendingDelete,
+    requestDelete,
+    clearPendingDelete,
+    confirmDelete,
+  } = useCrudResource(tasksApi, LABELS);
 
   const [priorityFilter, setPriorityFilter] = useState([]);
   const [statusFilter, setStatusFilter] = useState([]);
-
-  const load = async () => {
-    setLoading(true);
-    try {
-      const data = await tasksApi.list();
-      setTasks(data);
-    } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to load tasks.", {
-        autoClose: 3000,
-        position: "bottom-right",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    load();
-  }, []);
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
@@ -64,26 +59,6 @@ export default function TasksPage() {
     setStatusFilter([]);
   };
 
-  const openCreate = () => {
-    setEditing(null);
-    setModalOpen(true);
-  };
-
-  const openEdit = (task) => {
-    setEditing(task);
-    setModalOpen(true);
-  };
-
-  const handleSubmit = async (payload) => {
-    if (editing) {
-      const updated = await tasksApi.update(editing.id, payload);
-      setTasks((list) => list.map((t) => (t.id === updated.id ? updated : t)));
-    } else {
-      const created = await tasksApi.create(payload);
-      setTasks((list) => [created, ...list]);
-    }
-  };
-
   const handleToggleComplete = async (task) => {
     const nextStatus = task.status === "completed" ? "pending" : "completed";
     const optimistic = {
@@ -97,32 +72,7 @@ export default function TasksPage() {
       setTasks((list) => list.map((t) => (t.id === updated.id ? updated : t)));
     } catch (err) {
       setTasks((list) => list.map((t) => (t.id === task.id ? task : t)));
-      toast.error(err?.response?.data?.message || "Failed to update task.", {
-        autoClose: 3000,
-        position: "bottom-right",
-      });
-    }
-  };
-
-  const requestDelete = (task) => setPendingDelete(task);
-
-  const confirmDelete = async () => {
-    if (!pendingDelete) return;
-    const task = pendingDelete;
-    const previous = tasks;
-    setTasks((list) => list.filter((t) => t.id !== task.id));
-    try {
-      await tasksApi.remove(task.id);
-      toast.success("Task deleted.", {
-        autoClose: 2500,
-        position: "bottom-right",
-      });
-    } catch (err) {
-      setTasks(previous);
-      toast.error(err?.response?.data?.message || "Failed to delete task.", {
-        autoClose: 3000,
-        position: "bottom-right",
-      });
+      notifyError(err, "Failed to update task.");
     }
   };
 
@@ -149,14 +99,11 @@ export default function TasksPage() {
           />
 
           {filteredTasks.length === 0 ? (
-            <div className="rounded-[12px] bg-[#f5f5f7] dark:bg-white/5 ring-1 ring-black/5 dark:ring-white/10 p-8 text-center">
-              <p className="text-[15px] font-semibold text-[#1d1d1f] dark:text-white">
-                No tasks match your filters
-              </p>
-              <p className="mt-1 text-[13px] text-black/60 dark:text-white/60">
-                Try clearing a filter or adding a new task.
-              </p>
-            </div>
+            <EmptyState
+              compact
+              title="No tasks match your filters"
+              description="Try clearing a filter or adding a new task."
+            />
           ) : (
             <TaskList
               tasks={filteredTasks}
@@ -171,7 +118,7 @@ export default function TasksPage() {
       <TaskFormModal
         open={modalOpen}
         task={editing}
-        onClose={() => setModalOpen(false)}
+        onClose={closeModal}
         onSubmit={handleSubmit}
       />
 
@@ -186,7 +133,7 @@ export default function TasksPage() {
         confirmLabel="Delete"
         variant="danger"
         onConfirm={confirmDelete}
-        onClose={() => setPendingDelete(null)}
+        onClose={clearPendingDelete}
       />
     </div>
   );

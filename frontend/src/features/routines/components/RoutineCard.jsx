@@ -1,24 +1,15 @@
-import { useState } from "react";
-import { Check, Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getRoutineIcon, DAYS, isActiveToday } from "../constants";
-
+import EditButton from "@/components/EditButton";
+import DeleteButton from "@/components/DeleteButton";
+import CheckButton from "@/components/CheckButton";
+import { useToggle } from "@/hooks/useToggle";
 export default function RoutineCard({ routine, onToggle, onEdit, onDelete }) {
   const Icon = getRoutineIcon(routine.icon);
   const completed = !!routine.completed_today;
   const activeToday = isActiveToday(routine);
-  const [busy, setBusy] = useState(false);
 
-  const handleToggle = async () => {
-    if (busy) return;
-    setBusy(true);
-    try {
-      await onToggle(routine);
-    } finally {
-      setBusy(false);
-    }
-  };
+  const { busy, handleToggle} = useToggle(onToggle);
 
   return (
     <div
@@ -55,45 +46,11 @@ export default function RoutineCard({ routine, onToggle, onEdit, onDelete }) {
       </div>
 
       <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => onEdit(routine)}
-          aria-label="Edit routine"
-          className="rounded-full text-black/60 dark:text-white/60"
-        >
-          <Pencil className="size-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => onDelete(routine)}
-          aria-label="Delete routine"
-          className="rounded-full text-black/60 dark:text-white/60 hover:text-red-600"
-        >
-          <Trash2 className="size-4" />
-        </Button>
+        <EditButton onClick={() => onEdit(routine)} ariaLabel="Edit routine" />
+        <DeleteButton onClick={() => onDelete(routine)} ariaLabel="Delete routine" />
       </div>
 
-      <button
-        type="button"
-        onClick={handleToggle}
-        disabled={busy}
-        aria-pressed={completed}
-        aria-label={completed ? "Mark not done" : "Mark done"}
-        className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-full transition-all",
-          "border-2",
-          completed
-            ? "bg-[#0071e3] border-transparent text-white"
-            : "border-black/20 dark:border-white/30 text-transparent hover:border-[#0071e3]",
-          busy && "opacity-60"
-        )}
-      >
-        <Check className="size-4" strokeWidth={3} />
-      </button>
+      <CheckButton onClick={() => handleToggle(routine)} busy={busy} completed={completed} />
     </div>
   );
 }

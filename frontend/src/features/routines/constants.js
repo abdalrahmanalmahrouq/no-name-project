@@ -19,6 +19,9 @@ import {
   Apple,
   Sparkles,
 } from "lucide-react";
+import { todayKey } from "@/lib/date";
+
+export { todayKey };
 
 export const TIME_OF_DAY = [
   { value: "morning",   label: "Morning",   icon: Sunrise },
@@ -62,10 +65,6 @@ export function getRoutineIcon(value) {
 
 export function getTimeOfDayMeta(value) {
   return TIME_OF_DAY.find((t) => t.value === value) ?? TIME_OF_DAY[4];
-}
-
-export function todayKey() {
-  return ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][new Date().getDay()];
 }
 
 export function isActiveToday(routine) {

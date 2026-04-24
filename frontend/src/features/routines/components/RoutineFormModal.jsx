@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "react-toastify";
 import Modal from "@/components/Modal";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 import IconPicker from "./IconPicker";
 import TimeOfDayPicker from "./TimeOfDayPicker";
 import DayPicker from "./DayPicker";
@@ -18,8 +18,13 @@ const DEFAULTS = {
 export default function RoutineFormModal({ open, routine, onClose, onSubmit }) {
   const isEdit = Boolean(routine);
   const [form, setForm] = useState(DEFAULTS);
-  const [submitting, setSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
+
+  const { submitting, errors, setErrors, run } = useFormSubmit({
+    submit: onSubmit,
+    successMsg: isEdit ? "Routine updated." : "Routine created.",
+    errorMsg: "Failed to save routine.",
+    onSuccess: onClose,
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -34,7 +39,7 @@ export default function RoutineFormModal({ open, routine, onClose, onSubmit }) {
           }
         : DEFAULTS
     );
-  }, [open, routine]);
+  }, [open, routine, setErrors]);
 
   const update = (patch) => setForm((prev) => ({ ...prev, ...patch }));
 
@@ -44,29 +49,7 @@ export default function RoutineFormModal({ open, routine, onClose, onSubmit }) {
       setErrors({ title: "Title is required." });
       return;
     }
-    setSubmitting(true);
-    try {
-      await onSubmit(form);
-      toast.success(isEdit ? "Routine updated." : "Routine created.", {
-        autoClose: 2500,
-        position: "bottom-right",
-      });
-      onClose();
-    } catch (err) {
-      const apiErrors = err?.response?.data?.errors;
-      if (apiErrors) {
-        const flat = Object.fromEntries(
-          Object.entries(apiErrors).map(([k, v]) => [k, v[0]])
-        );
-        setErrors(flat);
-      }
-      toast.error(
-        err?.response?.data?.message || "Failed to save routine.",
-        { autoClose: 3000, position: "bottom-right" }
-      );
-    } finally {
-      setSubmitting(false);
-    }
+    await run(form);
   };
 
   return (

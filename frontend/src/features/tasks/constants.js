@@ -8,28 +8,15 @@ import {
   ArrowRight,
   ArrowUp,
 } from "lucide-react";
+import { todayISO, isToday, isOverdue } from "@/lib/date";
+
+export { todayISO, isToday, isOverdue };
 
 export const STATUSES = [
-  {
-    value: "pending",
-    label: "Pending",
-    icon: CircleDashed,
-  },
-  {
-    value: "in_progress",
-    label: "In Progress",
-    icon: Loader,
-  },
-  {
-    value: "completed",
-    label: "Completed",
-    icon: CheckCircle2,
-  },
-  {
-    value: "archived",
-    label: "Archived",
-    icon: Archive,
-  },
+  { value: "pending",     label: "Pending",     icon: CircleDashed },
+  { value: "in_progress", label: "In Progress", icon: Loader },
+  { value: "completed",   label: "Completed",   icon: CheckCircle2 },
+  { value: "archived",    label: "Archived",    icon: Archive },
 ];
 
 export const PRIORITIES = [
@@ -102,20 +89,6 @@ export function formatEstimate(minutes) {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   return m === 0 ? `${h}h` : `${h}h ${m}m`;
-}
-
-export function todayISO() {
-  const now = new Date();
-  const tz = now.getTimezoneOffset() * 60_000;
-  return new Date(now.getTime() - tz).toISOString().slice(0, 10);
-}
-
-export function isToday(iso) {
-  return !!iso && iso === todayISO();
-}
-
-export function isOverdue(iso) {
-  return !!iso && iso < todayISO();
 }
 
 export const DUE_BUCKETS = [

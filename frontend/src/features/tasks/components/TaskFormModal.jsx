@@ -2,16 +2,11 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "react-toastify";
 import Modal from "@/components/Modal";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
+import { todayISO } from "@/lib/date";
 import PriorityPicker from "./PriorityPicker";
 import StatusPicker from "./StatusPicker";
-
-function todayISO() {
-  const now = new Date();
-  const tz = now.getTimezoneOffset() * 60_000;
-  return new Date(now.getTime() - tz).toISOString().slice(0, 10);
-}
 
 const buildDefaults = () => ({
   title: "",
@@ -38,8 +33,13 @@ function toPayload(form) {
 export default function TaskFormModal({ open, task, onClose, onSubmit }) {
   const isEdit = Boolean(task);
   const [form, setForm] = useState(buildDefaults);
-  const [submitting, setSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
+
+  const { submitting, errors, setErrors, run } = useFormSubmit({
+    submit: (payload) => onSubmit(payload),
+    successMsg: isEdit ? "Task updated." : "Task created.",
+    errorMsg: "Failed to save task.",
+    onSuccess: onClose,
+  });
 
   const today = todayISO();
   const minDate =
@@ -63,7 +63,7 @@ export default function TaskFormModal({ open, task, onClose, onSubmit }) {
           }
         : buildDefaults()
     );
-  }, [open, task]);
+  }, [open, task, setErrors]);
 
   const update = (patch) => setForm((prev) => ({ ...prev, ...patch }));
 
@@ -80,29 +80,7 @@ export default function TaskFormModal({ open, task, onClose, onSubmit }) {
       setErrors(nextErrors);
       return;
     }
-    setSubmitting(true);
-    try {
-      await onSubmit(toPayload(form));
-      toast.success(isEdit ? "Task updated." : "Task created.", {
-        autoClose: 2500,
-        position: "bottom-right",
-      });
-      onClose();
-    } catch (err) {
-      const apiErrors = err?.response?.data?.errors;
-      if (apiErrors) {
-        const flat = Object.fromEntries(
-          Object.entries(apiErrors).map(([k, v]) => [k, v[0]])
-        );
-        setErrors(flat);
-      }
-      toast.error(
-        err?.response?.data?.message || "Failed to save task.",
-        { autoClose: 3000, position: "bottom-right" }
-      );
-    } finally {
-      setSubmitting(false);
-    }
+    await run(toPayload(form));
   };
 
   return (

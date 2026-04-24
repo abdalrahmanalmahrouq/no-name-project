@@ -1,12 +1,10 @@
-import { useState } from "react";
-import { Check, Pencil, Trash2, Clock, Calendar } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Clock, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  getPriorityMeta,
-  formatDueDate,
-  formatEstimate,
-} from "../constants";
+import {getPriorityMeta,formatDueDate,formatEstimate,} from "../constants";
+import EditButton from "@/components/EditButton";
+import DeleteButton from "@/components/DeleteButton";
+import CheckButton from "@/components/CheckButton";
+import { useToggle } from "@/hooks/useToggle";
 
 export default function TaskCard({ task, emphasis, onToggleComplete, onEdit, onDelete }) {
   const completed = task.status === "completed";
@@ -16,18 +14,8 @@ export default function TaskCard({ task, emphasis, onToggleComplete, onEdit, onD
   const estimate = formatEstimate(task.estimated_minutes);
   const PriorityIcon = priority.icon;
 
-  const [busy, setBusy] = useState(false);
 
-  const handleToggle = async () => {
-    if (busy) return;
-    setBusy(true);
-    try {
-      await onToggleComplete(task);
-    } finally {
-      setBusy(false);
-    }
-  };
-
+  const {busy, handleToggle} = useToggle(onToggleComplete);
   return (
     <div
       className={cn(
@@ -41,23 +29,7 @@ export default function TaskCard({ task, emphasis, onToggleComplete, onEdit, onD
         archived && "opacity-60"
       )}
     >
-      <button
-        type="button"
-        onClick={handleToggle}
-        disabled={busy || archived}
-        aria-pressed={completed}
-        aria-label={completed ? "Mark not done" : "Mark done"}
-        className={cn(
-          "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full transition-all",
-          "border-2",
-          completed
-            ? "bg-[#0071e3] border-transparent text-white"
-            : "border-black/25 dark:border-white/30 text-transparent hover:border-[#0071e3]",
-          busy && "opacity-60"
-        )}
-      >
-        <Check className="size-3.5" strokeWidth={3} />
-      </button>
+      <CheckButton onClick={() => handleToggle(task)} busy={busy} completed={completed} archived={archived} />
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 flex-wrap">
@@ -123,26 +95,8 @@ export default function TaskCard({ task, emphasis, onToggleComplete, onEdit, onD
       </div>
 
       <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => onEdit(task)}
-          aria-label="Edit task"
-          className="rounded-full text-black/60 dark:text-white/60"
-        >
-          <Pencil className="size-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => onDelete(task)}
-          aria-label="Delete task"
-          className="rounded-full text-black/60 dark:text-white/60 hover:text-red-600"
-        >
-          <Trash2 className="size-4" />
-        </Button>
+        <EditButton onClick={() => onEdit(task)} ariaLabel="Edit task" />
+        <DeleteButton onClick={() => onDelete(task)} ariaLabel="Delete task" />
       </div>
     </div>
   );
