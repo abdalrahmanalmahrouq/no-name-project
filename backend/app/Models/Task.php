@@ -39,4 +39,17 @@ class Task extends Model
     {
         return $this->status === 'completed';
     }
+
+    public function isOverdue(): bool
+    {
+        if (! $this->due_date) {
+            return false;
+        }
+
+        if (in_array($this->status, ['completed', 'archived'], true)) {
+            return false;
+        }
+
+        return $this->due_date->lt(today());
+    }
 }

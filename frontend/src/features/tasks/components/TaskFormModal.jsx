@@ -184,15 +184,32 @@ export default function TaskFormModal({ open, task, onClose, onSubmit }) {
           />
         </div>
 
-        {isEdit && (
-          <div className="space-y-2">
-            <Label>Status</Label>
-            <StatusPicker
-              value={form.status}
-              onChange={(status) => update({ status })}
-            />
-          </div>
-        )}
+        {isEdit && (() => {
+          const originalLocked =
+            task &&
+            !["completed", "archived"].includes(task.status) &&
+            task.due_date &&
+            task.due_date < today;
+          const stillOverdue =
+            form.due_date && form.due_date < today;
+          const statusLocked = Boolean(originalLocked && stillOverdue);
+
+          return (
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <StatusPicker
+                value={form.status}
+                onChange={(status) => update({ status })}
+                disabled={statusLocked}
+              />
+              {statusLocked && (
+                <p className="text-[12px] text-black/55 dark:text-white/55">
+                  Status is locked while this task is overdue. Move the due date to today or later to change it.
+                </p>
+              )}
+            </div>
+          );
+        })()}
       </form>
     </Modal>
   );

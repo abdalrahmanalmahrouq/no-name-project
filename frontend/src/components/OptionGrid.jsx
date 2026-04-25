@@ -29,6 +29,7 @@ export default function OptionGrid({
   multi = false,
   layout = "stack",
   containerClassName = "grid grid-cols-5 gap-2",
+  disabled = false,
 }) {
   const isPill = layout === "pill";
 
@@ -55,10 +56,12 @@ export default function OptionGrid({
             type="button"
             onClick={() => handleClick(v)}
             aria-pressed={active}
+            disabled={disabled}
             className={cn(
               ITEM_LAYOUT[layout],
               !isPill && BORDER_BASE,
-              active ? activeClass : inactiveClass
+              active ? activeClass : inactiveClass,
+              disabled && "cursor-not-allowed opacity-50"
             )}
           >
             {Icon && <Icon className="size-4" />}

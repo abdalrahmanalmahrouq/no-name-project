@@ -1,7 +1,7 @@
 import OptionGrid from "@/components/OptionGrid";
 import { STATUSES } from "../constants";
 
-export default function StatusPicker({ value, onChange }) {
+export default function StatusPicker({ value, onChange, disabled = false }) {
   return (
     <OptionGrid
       options={STATUSES}
@@ -9,6 +9,7 @@ export default function StatusPicker({ value, onChange }) {
       onChange={onChange}
       layout="stack"
       containerClassName="grid grid-cols-2 sm:grid-cols-4 gap-2"
+      disabled={disabled}
     />
   );
 }

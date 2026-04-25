@@ -1,6 +1,11 @@
 import { Clock, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {getPriorityMeta,formatDueDate,formatEstimate,} from "../constants";
+import {
+  getPriorityMeta,
+  formatDueDate,
+  formatEstimate,
+  isOverdue,
+} from "../constants";
 import EditButton from "@/components/EditButton";
 import DeleteButton from "@/components/DeleteButton";
 import CheckButton from "@/components/CheckButton";
@@ -9,13 +14,13 @@ import { useToggle } from "@/hooks/useToggle";
 export default function TaskCard({ task, emphasis, onToggleComplete, onEdit, onDelete }) {
   const completed = task.status === "completed";
   const archived = task.status === "archived";
+  const overdue = !completed && !archived && isOverdue(task.due_date);
   const priority = getPriorityMeta(task.priority);
   const due = formatDueDate(task.due_date);
   const estimate = formatEstimate(task.estimated_minutes);
   const PriorityIcon = priority.icon;
 
-
-  const {busy, handleToggle} = useToggle(onToggleComplete);
+  const { busy, handleToggle } = useToggle(onToggleComplete);
   return (
     <div
       className={cn(
@@ -29,7 +34,18 @@ export default function TaskCard({ task, emphasis, onToggleComplete, onEdit, onD
         archived && "opacity-60"
       )}
     >
-      <CheckButton onClick={() => handleToggle(task)} busy={busy} completed={completed} archived={archived} />
+      <CheckButton
+        onClick={() => handleToggle(task)}
+        busy={busy}
+        completed={completed}
+        archived={archived}
+        disabled={overdue}
+        title={
+          overdue
+            ? "This task is overdue. Update its due date to today or later to change the status."
+            : undefined
+        }
+      />
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 flex-wrap">
